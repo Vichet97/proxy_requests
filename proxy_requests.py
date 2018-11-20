@@ -10,6 +10,8 @@ class ProxyRequests:
         self.sockets = []
         self.url = url
         self.country = country
+        if self.country  == "" :
+            self.country = None
         self.proxy = ""
         self.request = ""
         self.headers = {}
@@ -216,7 +218,7 @@ class ProxyRequestsBasicAuth(ProxyRequests):
 
 if __name__ == "__main__":
     # example post with headers
-    r = ProxyRequests("https://postman-echo.com/post")
+    r = ProxyRequests("https://postman-echo.com/post","")
     r.set_headers({"name": "rootVIII", "secret_message": "7Yufs9KIfj33d"})
     r.post_with_headers({"key1": "value1", "key2": "value2"})
     print(r)
