@@ -61,6 +61,30 @@ class ProxyRequests:
                 print('working...')
                 self.get()
 
+    # recursively try proxy sockets until successful GET with headers
+    def get_with_headers(self):
+        if len(self.sockets) > 0:
+            current_socket = self.sockets.pop(0)
+            proxies = {"http": "http://" + current_socket, "https": "https://" + current_socket}
+            try:
+                request = requests.get(self.url, timeout=3.0,headers=self.headers, proxies=proxies)
+                self.request = request.text
+                self.headers = request.headers
+                self.status_code = request.status_code
+                self.proxy_used = current_socket
+            except:
+                print('working...')
+                self.get()
+        else:
+            try:
+                request = requests.get(self.url, timeout=3.0,headers=self.headers)
+                self.request = request.text
+                self.headers = request.headers
+                self.status_code = request.status_code
+            except:
+                print('working...')
+                self.get()
+
     # recursively try proxy sockets until successful POST
     def post(self, data):
         if len(self.sockets) > 0:
@@ -173,8 +197,8 @@ class ProxyRequests:
 
 
 class ProxyRequestsBasicAuth(ProxyRequests):
-    def __init__(self, url, username, password):
-        super().__init__(url)
+    def __init__(self, url, username, password, country):
+        super().__init__(url,country)
         self.username = username
         self.password = password
 
@@ -195,7 +219,24 @@ class ProxyRequestsBasicAuth(ProxyRequests):
             except:
                 print('working...')
                 self.get()
-
+    # recursively try proxy sockets until successful GET with Headers (overrided method)
+    def get_with_headers(self):
+        if len(self.sockets) > 0:
+            current_socket = self.sockets.pop(0)
+            proxies = {"http": "http://" + current_socket, "https": "https://" + current_socket}
+            try:
+                request = requests.get(self.url,
+                                       auth=(self.username, self.password),
+                                       timeout=3.0,
+                                       headers=self.headers,
+                                       proxies=proxies)
+                self.request = request.text
+                self.headers = request.headers
+                self.status_code = request.status_code
+                self.proxy_used = current_socket
+            except:
+                print('working...')
+                self.get()
     # recursively try proxy sockets until successful POST (overrided method)
     def post(self, data):
         if len(self.sockets) > 0:
