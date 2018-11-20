@@ -6,9 +6,10 @@ from requests.auth import HTTPBasicAuth
 
 
 class ProxyRequests:
-    def __init__(self, url):
+    def __init__(self, url, country):
         self.sockets = []
         self.url = url
+        self.country = country
         self.proxy = ""
         self.request = ""
         self.headers = {}
@@ -18,20 +19,20 @@ class ProxyRequests:
         self.proxy_used = ""
 
     # get a list of sockets from sslproxies.org
-    def __acquire_sockets(self, country):
+    def __acquire_sockets(self):
         r = requests.get("https://www.sslproxies.org/")
-        if country is not None:
-            matches = re.findall(r"<td>\d+.\d+.\d+.\d+</td><td>\d+</td><td>"+country+"</td>", r.text)
+        if self.country is not None:
+            matches = re.findall(r"<td>\d+.\d+.\d+.\d+</td><td>\d+</td><td>"+self.country+"</td>", r.text)
             if len(matches) < 1:
                 matches = re.findall(r"<td>\d+.\d+.\d+.\d+</td><td>\d+</td>", r.text)
         else :
             matches = re.findall(r"<td>\d+.\d+.\d+.\d+</td><td>\d+</td>", r.text)
         revised_list = [m1.replace("<td>", "") for m1 in matches]
         for socket_str in revised_list:
-            if country is not None:
-                sockets.append(socket_str[:-5].replace("</td>", ":").replace(":"+country, ""))
+            if self.country is not None:
+                self.sockets.append(socket_str[:-5].replace("</td>", ":").replace(":"+self.country, ""))
             else:
-                sockets.append(socket_str[:-5].replace("</td>", ":"))
+                self.sockets.append(socket_str[:-5].replace("</td>", ":"))
 
     # recursively try proxy sockets until successful GET
     def get(self):
