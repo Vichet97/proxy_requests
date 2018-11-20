@@ -29,7 +29,7 @@ The ProxyRequestBasicAuth subclass has get, post, post_with_headers, and post_fi
 
 <b>example GET:</b><br>
 <code>
-  r = ProxyRequests("https://api.ipify.org","KH") "KH": Cambodia or "": Any Country
+  r = ProxyRequests("https://api.ipify.org","KH") "KH": Cambodia or "Any": Any Country or "": Non-proxy
 </code>
 <br>
 <code>
