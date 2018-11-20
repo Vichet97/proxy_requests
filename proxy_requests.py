@@ -10,13 +10,14 @@ class ProxyRequests:
         self.sockets = []
         self.url = url
         self.country = country
-        if self.country  == "" :
+        if self.country  == "Any" :
             self.country = None
         self.proxy = ""
         self.request = ""
         self.headers = {}
         self.file_dict = {}
-        self.__acquire_sockets()
+        if country != "":
+            self.__acquire_sockets()
         self.status_code = ""
         self.proxy_used = ""
 
@@ -50,6 +51,15 @@ class ProxyRequests:
             except:
                 print('working...')
                 self.get()
+        else:
+            try:
+                request = requests.get(self.url, timeout=3.0)
+                self.request = request.text
+                self.headers = request.headers
+                self.status_code = request.status_code
+            except:
+                print('working...')
+                self.get()
 
     # recursively try proxy sockets until successful POST
     def post(self, data):
@@ -62,6 +72,15 @@ class ProxyRequests:
                 self.headers = request.headers
                 self.status_code = request.status_code
                 self.proxy_used = current_socket
+            except:
+                print('working...')
+                self.post(data)
+        else :
+            try:
+                request = requests.post(self.url, json=data, timeout=3.0)
+                self.request = request.text
+                self.headers = request.headers
+                self.status_code = request.status_code
             except:
                 print('working...')
                 self.post(data)
@@ -84,6 +103,18 @@ class ProxyRequests:
             except:
                 print('working...')
                 self.post_with_headers(data)
+        else :
+            try:
+                request = requests.post(self.url,
+                                        json=data,
+                                        timeout=3.0,
+                                        headers=self.headers)
+                self.request = request.text
+                self.headers = request.headers
+                self.status_code = request.status_code
+            except:
+                print('working...')
+                self.post_with_headers(data)
 
     # recursively try proxy sockets until successful POST with file
     def post_file(self):
@@ -99,6 +130,17 @@ class ProxyRequests:
                 self.headers = request.headers
                 self.status_code = request.status_code
                 self.proxy_used = current_socket
+            except:
+                print('working...')
+                self.post_file()
+        else :
+            try:
+                request = requests.post(self.url,
+                                        files=self.file_dict,
+                                        timeout=3.0)
+                self.request = request.text
+                self.headers = request.headers
+                self.status_code = request.status_code
             except:
                 print('working...')
                 self.post_file()
