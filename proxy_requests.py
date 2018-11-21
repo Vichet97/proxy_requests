@@ -74,7 +74,7 @@ class ProxyRequests:
                 self.proxy_used = current_socket
             except:
                 print('working...')
-                self.get()
+                self.get_with_headers()
         else:
             try:
                 request = requests.get(self.url, timeout=3.0,headers=self.headers)
@@ -83,7 +83,7 @@ class ProxyRequests:
                 self.status_code = request.status_code
             except:
                 print('working...')
-                self.get()
+                self.get_with_headers()
 
     # recursively try proxy sockets until successful POST
     def post(self, data):
@@ -236,7 +236,7 @@ class ProxyRequestsBasicAuth(ProxyRequests):
                 self.proxy_used = current_socket
             except:
                 print('working...')
-                self.get()
+                self.get_with_headers()
     # recursively try proxy sockets until successful POST (overrided method)
     def post(self, data):
         if len(self.sockets) > 0:
